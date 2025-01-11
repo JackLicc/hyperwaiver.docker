@@ -1,7 +1,7 @@
 #!/bin/bash
 
-[ ! -d "codebases/trustwaiver" ] && git clone --branch main git@github.com:JackLicc/trustwaiver.git codebases/trustwaiver
-[ ! -d "codebases/trustwaiver-fe" ] && git clone --branch main git@github.com:JackLicc/trustwaiver-fe.git codebases/trustwaiver-fe
+[ ! -d "codebases/hyperwaiver" ] && git clone --branch main git@github.com:JackLicc/hyperwaiver.git codebases/hyperwaiver
+[ ! -d "codebases/hyperwaiver-fe" ] && git clone --branch main git@github.com:JackLicc/hyperwaiver-fe.git codebases/hyperwaiver-fe
 
 docker compose up --no-start
 

@@ -1,2 +1,2 @@
-# trustwaiver.docker
-docker for trustwaiver
+# hyperwaiver.docker
+docker for hyperwaiver
