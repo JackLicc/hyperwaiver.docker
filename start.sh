@@ -2,12 +2,10 @@
 
 source .env
 
-docker compose build --no-cache caddy
-
 if [ "$ENV" = "production" ]; then
-    docker compose -f docker-compose.yaml -f docker-compose.prod.yaml build --no-cache
+    docker compose -f docker-compose.yaml -f docker-compose.prod.yaml build
 else
-    docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build --no-cache
+    docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
     docker image prune -f
     docker builder prune --all -f
 fi
