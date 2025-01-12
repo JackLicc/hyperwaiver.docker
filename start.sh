@@ -2,14 +2,15 @@
 
 source .env
 
-docker compose build --no-cache water
+docker compose build --no-cache caddy
 
 if [ "$ENV" = "production" ]; then
-    echo "Building the feapp image in production environment"
-    docker compose build --no-cache feapp
+    docker compose -f docker-compose.yaml -f docker-compose.prod.yaml build --no-cache
+else
+    docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build --no-cache
+    docker image prune -f
+    docker builder prune --all -f
 fi
 
-docker image prune -f
-docker builder prune --all -f
 
 docker compose up --remove-orphans --detach
