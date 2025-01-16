@@ -1,38 +1,44 @@
-FROM bitnami/php-fpm:8.4
+FROM php:8.2-fpm-alpine
 
 RUN set -eux; \
-    apt-get update; \
-    apt-get upgrade -y; \
-    apt-get install -y --no-install-recommends \
+    apk update && apk add --no-cache \
             curl \
             libmemcached-dev \
-            libz-dev \
-            libpq-dev \
-            libjpeg-dev \
+            zlib-dev \
+            postgresql-dev \
+            jpeg-dev \
             libpng-dev \
-            libfreetype6-dev \
-            libssl-dev \
+            freetype-dev \
+            openssl-dev \
             libwebp-dev \
             libxpm-dev \
-            libmcrypt-dev \
-            libonig-dev
+            libzip-dev \
+            oniguruma-dev
 
-RUN set -eux; \
-    # Install the PHP pdo_mysql extention
-    docker-php-ext-install pdo_mysql; \
-    # Install the PHP pdo_pgsql extention
-    docker-php-ext-install pdo_pgsql; \
-    # Install the PHP gd library
-    docker-php-ext-configure gd \
-            --prefix=/usr \
-            --with-jpeg \
-            --with-webp \
-            --with-xpm \
-            --with-freetype; \
-    docker-php-ext-install gd
+RUN docker-php-ext-configure gd \
+        --with-jpeg \
+        --with-webp \
+        --with-xpm \
+        --with-freetype \
+    && docker-php-ext-install -j$(nproc) \
+        gd \
+        pdo \
+        pdo_mysql \
+        mysqli \
+        zip
 
-COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+# Clean up dev dependencies
+RUN apk del --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    && rm -rf /tmp/* /var/cache/apk/*
+
+COPY php.ini "$PHP_INI_DIR/php.ini"
+COPY php-fpm.conf /usr/local/etc/php-fpm.conf
+
+WORKDIR /var/www/hyperwaiver
 
 EXPOSE 9000
 
-CMD ["php-fpm", "-c", "/usr/local/etc/php-fpm.d/www.conf"]
+CMD ["php-fpm"]
