@@ -1,44 +1,53 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm
 
 RUN set -eux; \
-    apk update && apk add --no-cache \
+    apt-get update; \
+    apt-get upgrade -y; \
+    apt-get install -y --no-install-recommends \
             curl \
             libmemcached-dev \
-            zlib-dev \
-            postgresql-dev \
-            jpeg-dev \
+            libjpeg-dev \
             libpng-dev \
-            freetype-dev \
-            openssl-dev \
+            libfreetype6-dev \
+            libssl-dev \
             libwebp-dev \
             libxpm-dev \
-            libzip-dev \
-            oniguruma-dev
+            libmcrypt-dev \
+            libonig-dev \
+            libgmp-dev \
+            libicu-dev \
+            libzip-dev;
 
-RUN docker-php-ext-configure gd \
+RUN set -eux; \
+    docker-php-ext-configure gd \
         --with-jpeg \
         --with-webp \
         --with-xpm \
-        --with-freetype \
-    && docker-php-ext-install -j$(nproc) \
+        --with-freetype; \
+    docker-php-ext-install -j$(nproc) \
+        bcmath \
         gd \
-        pdo \
+        gmp \
+        intl \
+        opcache \
         pdo_mysql \
-        mysqli \
-        zip
+        pcntl \
+        sockets \
+        zip;
 
-# Clean up dev dependencies
-RUN apk del --no-cache \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    && rm -rf /tmp/* /var/cache/apk/*
+RUN pecl update-channels; \
+    pecl install \
+        redis \
+        xdebug;
 
-COPY php.ini "$PHP_INI_DIR/php.ini"
-COPY php-fpm.conf /usr/local/etc/php-fpm.conf
+RUN docker-php-ext-enable redis;
+
+# COPY php.ini "$PHP_INI_DIR/php.ini"
+# COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 
 WORKDIR /var/www/hyperwaiver
 
 EXPOSE 9000
 
+# CMD ["php-fpm", "-c", "/usr/local/etc/php-fpm.conf"]
 CMD ["php-fpm"]

@@ -1,7 +1,0 @@
-services:
-  caddy:
-    depends_on:
-      - beanstalkd
-      - mariadb
-      - php-fpm
-      - redis
