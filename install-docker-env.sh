@@ -8,7 +8,7 @@ docker compose up --no-start
 docker compose up --detach
 sleep 60
 
-docker exec -it mysql bash -c "chmod 444 /etc/mysql/my.cnf"
+docker exec -it mariadb bash -c "chmod 444 /etc/mysql/my.cnf"
 
 docker compose -f ./docker-compose.yaml stop
 sleep 20
