@@ -1,0 +1,111 @@
+networks:
+  web-network:
+
+
+services:
+  caddy:
+    image: caddy:2.9.1-alpine
+    container_name: caddy
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./docker/images/caddy/conf.d:/etc/caddy
+      - ./codebases:/var/www
+    environment:
+      - CADDY_INGRESS_NETWORKS=web-network
+    networks:
+      web-network:
+  
+  php-fpm:
+    build:
+      context: ./docker/images/php-fpm
+    image: php-fpm
+    container_name: php-fpm
+    tty: true
+    volumes:
+      - ./codebases/hyperwaiver:/var/www/hyperwaiver
+    ports:
+      - "9000:9000"
+    expose:
+      - "9000"
+    networks:
+      web-network:
+
+  queue-worker:
+    image: php-fpm
+    container_name: queue-worker
+    depends_on:
+      - php-fpm
+    tty: true
+    environment:
+      SERVICE_NAME: queue-worker
+    working_dir: /var/www/hyperwaiver
+    volumes:
+      - ./codebases/hyperwaiver:/var/www/hyperwaiver
+    command: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600
+    restart: always 
+    networks:
+      web-network:
+
+  scheduler-worker:
+    image: php-fpm
+    container_name: scheduler-worker
+    depends_on:
+      - php-fpm
+    tty: true
+    environment:
+      SERVICE_NAME: scheduler-worker
+    working_dir: /var/www/hyperwaiver
+    volumes:
+      - ./codebases/hyperwaiver:/var/www/hyperwaiver
+    command: php artisan schedule:work
+    restart: always 
+    networks:
+      web-network:
+
+  mariadb:
+    build:
+      context: ./docker/images/mariadb
+    image: mariadb
+    container_name: mariadb
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/images/mariadb:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      web-network:
+
+
+  redis:
+    build:
+      context: ./docker/images/redis
+    image: redis
+    container_name: redis
+    tty: true
+    ports:
+      - "6379:6379"
+    networks:
+      web-network:
+
+  beanstalkd:
+    image: schickling/beanstalkd
+    container_name: beanstalkd
+    ports:
+      - "11300:11300"
+
+volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local

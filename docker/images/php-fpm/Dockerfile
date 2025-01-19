@@ -42,6 +42,8 @@ RUN pecl update-channels; \
 
 RUN docker-php-ext-enable redis;
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # COPY php.ini "$PHP_INI_DIR/php.ini"
 # COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 
