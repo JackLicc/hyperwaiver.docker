@@ -10,12 +10,19 @@ else
 fi
 
 docker compose $compose_files up --no-start
+
 docker compose $compose_files up --detach
+
 sleep 60
+
 docker exec -it mariadb bash -c "chmod 444 /etc/mysql/my.cnf"
+
 docker compose $compose_files stop
+
 sleep 20
+
 docker compose $compose_files up --detach
+
 sleep 60
 
 echo "Environment created ok. Run start.sh to run."
