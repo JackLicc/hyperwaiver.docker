@@ -3,12 +3,19 @@
 source .env
 
 if [ "$ENV" = "production" ]; then
-    docker compose -f docker-compose.yaml -f docker-compose.prod.yaml build
+    compose_files="-f docker-compose.yaml -f docker-compose.prod.yaml"
 else
-    docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
+    compose_files="-f docker-compose.yaml -f docker-compose.dev.yaml"
+fi
+
+
+if [ "$ENV" = "production" ]; then
+    docker compose $compose_files build
+else
+    docker compose $compose_files build
     docker image prune -f
     docker builder prune --all -f
 fi
 
 
-docker compose up --remove-orphans --detach
+docker compose $compose_files up --remove-orphans --detach
