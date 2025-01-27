@@ -1,0 +1,22 @@
+hyperwaiver.co.nz {
+    import ./security.conf
+
+    tls internal
+
+	handle_path /api* {
+
+        root * /var/www/hyperwaiver/public
+
+        file_server
+
+        rewrite * /index.php?{query}
+
+		php_fastcgi php-fpm:9000
+	}
+
+	handle {
+		reverse_proxy webapp:3000 {
+            header_up Host {host}
+        }
+	}
+}

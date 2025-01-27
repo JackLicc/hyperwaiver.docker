@@ -49,7 +49,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/hyperwaiver
 
+RUN usermod -u 1000 www-data
+RUN groupmod -g 1000 www-data
+
+RUN chown -R www-data:www-data /var/www/hyperwaiver \
+    && mkdir -p /var/www/hyperwaiver/storage \
+    && chmod -R 755 /var/www/hyperwaiver/storage
+
+USER www-data
+
 EXPOSE 9000
 
-# CMD ["php-fpm", "-c", "/usr/local/etc/php-fpm.conf"]
 CMD ["php-fpm"]

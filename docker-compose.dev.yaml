@@ -1,11 +1,19 @@
 services:
-  caddy:
-    depends_on:
-      - beanstalkd
-      - mariadb
-      - php-fpm
-      - redis
-      - mailpit
+  webapp:
+    build:
+      context: ./codebases/hyperwaiver-fe
+      dockerfile: ./apps/webapp/docker/dev/Dockerfile # relative to the context
+    env_file: "./codebases/hyperwaiver-fe/apps/webapp/docker/dev/.env.development"
+    container_name: webapp
+    tty: true
+    volumes:
+      - ./codebases:/var/www/
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    networks:
+      web-network:
 
   mailpit:
     image: axllent/mailpit:latest
