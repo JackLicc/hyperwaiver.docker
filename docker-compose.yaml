@@ -1,7 +1,6 @@
 networks:
   web-network:
 
-
 services:
   caddy:
     image: caddy:2.9.1-alpine
@@ -13,6 +12,8 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # required for development, unecessary in production
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy_data:/data

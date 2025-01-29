@@ -1,7 +1,5 @@
-hyperwaiver.co.nz {
+*.hyperwaiver.com, hyperwaiver.com {
     import ./security.conf
-
-    tls internal
 
 	handle_path /api* {
 

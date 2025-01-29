@@ -1,17 +1,9 @@
 services:
-  # caddy:
-  #   depends_on:
-  #     - beanstalkd
-  #     - mariadb
-  #     - php-fpm
-  #     - redis
-  #     - webapp
-    
   webapp:
     build:
       context: ./codebases/hyperwaiver-fe
-      dockerfile: ./apps/webapp/docker/prod/Dockerfile # relative to the context
-    env_file: "./codebases/hyperwaiver-fe/apps/webapp/docker/prod/.env.production"
+      dockerfile: ../../docker/images/webapp/Dockerfile # relative to the context
+    env_file: "./docker/images/webapp/env.production"
     container_name: webapp
     tty: true
     volumes:
@@ -22,24 +14,3 @@ services:
       - "3000"
     networks:
       web-network:
-
-  mailpit:
-    image: axllent/mailpit:latest
-    container_name: mailpit
-    restart: unless-stopped
-    volumes:
-      - mailpit_data:/data
-    ports:
-      - 8025:8025
-      - 1025:1025
-    environment:
-      MP_MAX_MESSAGES: 5000
-      MP_DATABASE: /data/mailpit.db
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
-    networks:
-      web-network:
-
-volumes:
-  mailpit_data:
-    driver: local
