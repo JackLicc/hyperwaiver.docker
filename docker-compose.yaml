@@ -76,6 +76,19 @@ services:
     networks:
       web-network:
 
+  puppeteer:
+    build:
+      context: ./docker/images/puppeteer
+    container_name: puppeteer
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "3300:3300"
+    networks:
+      web-network:
+
   mariadb:
     build:
       context: ./docker/images/mariadb
