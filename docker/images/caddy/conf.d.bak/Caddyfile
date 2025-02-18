@@ -1,4 +1,5 @@
-:80 {
+http://hyperwaiver.co.nz,
+http://*.hyperwaiver.co.nz {
     @apiPath {
         path /api*
     }
@@ -18,11 +19,21 @@
     }
 }
 
-:443 {
+https://hyperwaiver.co.nz,
+https://*.hyperwaiver.co.nz,
+{
 	import ./security.conf
 	
 	tls internal
 
+	handle {
+		reverse_proxy webapp:3000 {
+            header_up Host {host}
+        }
+	}
+}
+
+http://ux-internal {
 	handle {
 		reverse_proxy webapp:3000 {
             header_up Host {host}
