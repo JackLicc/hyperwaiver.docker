@@ -10,9 +10,9 @@ fi
 
 
 if [ "$ENV" = "production" ]; then
-    docker compose $compose_files build
+    docker compose $compose_files up --detach
 else
-    docker compose $compose_files build
+    docker compose $compose_files up --detach
     docker image prune -f
     docker builder prune --all -f
 fi

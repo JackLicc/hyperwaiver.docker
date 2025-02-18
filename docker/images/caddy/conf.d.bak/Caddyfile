@@ -1,16 +1,27 @@
-*.hyperwaiver.com, hyperwaiver.com {
-    import ./security.conf
+:80 {
+    @apiPath {
+        path /api*
+    }
 
-	handle_path /api* {
+    handle @apiPath {
+		root * /var/www/hyperwaiver/public
 
-        root * /var/www/hyperwaiver/public
+		file_server
 
-        file_server
-
-        rewrite * /index.php?{query}
+		rewrite * /index.php?{query}
 
 		php_fastcgi php-fpm:9000
-	}
+    }
+
+    handle {
+        redir https://{host}{uri} permanent
+    }
+}
+
+:443 {
+	import ./security.conf
+	
+	tls internal
 
 	handle {
 		reverse_proxy webapp:3000 {

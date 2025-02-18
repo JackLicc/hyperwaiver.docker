@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const puppeteer = require("puppeteer");
 const app = express();
@@ -8,10 +7,7 @@ app.use(express.json());
 async function createBrowser() {
   return puppeteer.launch({
     headless: "new",
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox"
-    ],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 }
 
@@ -23,6 +19,7 @@ app.post("/generate-pdf", async (req, res) => {
   }
 
   let browser;
+
   try {
     browser = await createBrowser();
     const page = await browser.newPage();
@@ -33,14 +30,20 @@ app.post("/generate-pdf", async (req, res) => {
     // Wait until network is idle
     await page.goto(url, { waitUntil: "networkidle0" });
 
-    const pdf = await page.pdf({
+    // Uint8Array
+    const u8arr = await page.pdf({
       format: options.format || "A4",
       printBackground: options.printBackground || true,
-      margin: options.margin || { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }
+      margin: options.margin || {
+        top: "10mm",
+        right: "10mm",
+        bottom: "10mm",
+        left: "10mm",
+      },
     });
 
-    res.contentType("application/pdf");
-    res.send(pdf);
+    const buffer = Buffer.from(u8arr);
+    res.send(buffer);
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).json({ error: "Failed to generate PDF" });

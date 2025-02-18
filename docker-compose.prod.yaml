@@ -2,9 +2,11 @@ services:
   webapp:
     build:
       context: ./codebases/hyperwaiver-fe
-      dockerfile: ../../docker/images/webapp/Dockerfile # relative to the context
-    env_file: "./docker/images/webapp/env.production"
+      dockerfile: ../../docker/images/webapp/production/Dockerfile # relative to the context
+    env_file: "./docker/images/webapp/production/env.production"
     container_name: webapp
+    environment:
+      - NODE_ENV=production
     tty: true
     volumes:
       - ./codebases:/var/www/
