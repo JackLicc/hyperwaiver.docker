@@ -10,6 +10,7 @@ services:
     tty: true
     volumes:
       - ./codebases:/var/www/
+      - /var/www/hyperwaiver-fe/node_modules
     ports:
       - "3000:3000"
     expose:

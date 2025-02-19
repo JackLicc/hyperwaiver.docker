@@ -1,7 +1,16 @@
-http://hyperwaiver.co.nz,
-http://*.hyperwaiver.co.nz {
+http://hyperwaiver.com,
+http://*.hyperwaiver.com {
+
+    @httpPath {
+        path /app/waiver/pdfview/*
+    }
+
+    handle @httpPath {
+        reverse_proxy webapp:3000
+    }
+
     @apiPath {
-        path /api*
+        path /api/*
     }
 
     handle @apiPath {
@@ -19,21 +28,13 @@ http://*.hyperwaiver.co.nz {
     }
 }
 
-https://hyperwaiver.co.nz,
-https://*.hyperwaiver.co.nz,
+https://hyperwaiver.com,
+https://*.hyperwaiver.com,
 {
 	import ./security.conf
 	
 	tls internal
 
-	handle {
-		reverse_proxy webapp:3000 {
-            header_up Host {host}
-        }
-	}
-}
-
-http://ux-internal {
 	handle {
 		reverse_proxy webapp:3000 {
             header_up Host {host}

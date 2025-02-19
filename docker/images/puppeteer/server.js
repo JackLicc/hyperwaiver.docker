@@ -6,13 +6,27 @@ app.use(express.json());
 
 async function createBrowser() {
   return puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-infobars",
+      "--window-position=0,0",
+      "--ignore-certifcate-errors",
+      "--ignore-certifcate-errors-spki-list",
+      "--disable-web-security",
+      '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+    ],
+    headless: false,
+    defaultViewport: null,
+    ignoreHTTPSErrors: true,
+    dumpio: true,
   });
 }
 
 app.post("/generate-pdf", async (req, res) => {
   const { url, options = {} } = req.body;
+
+  console.log(url, options);
 
   if (!url) {
     return res.status(400).json({ error: "URL is required" });
@@ -24,10 +38,8 @@ app.post("/generate-pdf", async (req, res) => {
     browser = await createBrowser();
     const page = await browser.newPage();
 
-    // Set default viewport
     await page.setViewport({ width: 1920, height: 1080 });
 
-    // Wait until network is idle
     await page.goto(url, { waitUntil: "networkidle0" });
 
     // Uint8Array

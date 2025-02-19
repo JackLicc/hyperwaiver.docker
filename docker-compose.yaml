@@ -85,6 +85,8 @@ services:
       - "3300:3300"
     networks:
       web-network:
+    links:
+      - caddy:${CENTRAL_DOMAIN}
 
   mariadb:
     build:
