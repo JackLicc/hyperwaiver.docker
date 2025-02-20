@@ -40,8 +40,6 @@ services:
       - "9000:9000"
     expose:
       - "9000"
-    links:
-      - caddy:${CENTRAL_DOMAIN}
     networks:
       web-network:
 
@@ -56,10 +54,8 @@ services:
     working_dir: /var/www/hyperwaiver
     volumes:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
-    links:
-      - caddy:${CENTRAL_DOMAIN}
     command: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600
-    restart: always
+    restart: always 
     networks:
       web-network:
 
@@ -72,8 +68,6 @@ services:
     environment:
       SERVICE_NAME: scheduler-worker
     working_dir: /var/www/hyperwaiver
-    links:
-      - caddy:${CENTRAL_DOMAIN}
     volumes:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
     command: php artisan schedule:work
@@ -81,14 +75,18 @@ services:
     networks:
       web-network:
 
-  wkhtmltopdf:
+  puppeteer:
     build:
-      context: ./docker/images/wkhtmltopdf
-    container_name: wkhtmltopdf
+      context: ./docker/images/puppeteer
+    container_name: puppeteer
+    cap_add:
+      - NET_ADMIN
     ports:
       - "3300:3300"
     networks:
       web-network:
+    links:
+      - caddy:${CENTRAL_DOMAIN}
 
   mariadb:
     build:
