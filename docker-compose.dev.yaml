@@ -1,23 +1,4 @@
 services:
-  webapp:
-    build:
-      context: ./codebases/hyperwaiver-fe
-      dockerfile: ../../docker/images/webapp/development/Dockerfile # relative to the context
-    env_file: "./docker/images/webapp/development/env.development"
-    container_name: webapp
-    environment:
-      - NODE_ENV=development
-    tty: true
-    volumes:
-      - ./codebases:/var/www/
-      - /var/www/hyperwaiver-fe/node_modules
-    ports:
-      - "3000:3000"
-    expose:
-      - "3000"
-    networks:
-      web-network:
-
   mailpit:
     image: axllent/mailpit:latest
     container_name: mailpit

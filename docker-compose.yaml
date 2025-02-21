@@ -8,6 +8,8 @@ services:
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
       - "443:443"
@@ -74,19 +76,6 @@ services:
     restart: always 
     networks:
       web-network:
-
-  puppeteer:
-    build:
-      context: ./docker/images/puppeteer
-    container_name: puppeteer
-    cap_add:
-      - NET_ADMIN
-    ports:
-      - "3300:3300"
-    networks:
-      web-network:
-    links:
-      - caddy:${CENTRAL_DOMAIN}
 
   mariadb:
     build:
