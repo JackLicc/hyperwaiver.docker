@@ -1,13 +1,45 @@
-http://hyperwaiver.com,
-http://*.hyperwaiver.com {
-
-    @httpPath {
-        path /app/waiver/pdfview/*
+http://*.hpwaiver.com {
+    # make sure all api requests are internal calls
+    @apiPath {
+        path /api/*
     }
 
-    handle @httpPath {
-        reverse_proxy webapp:3000
+    handle @apiPath {
+		root * /var/www/hyperwaiver/public
+
+		file_server
+
+		rewrite * /index.php?{query}
+
+		php_fastcgi php-fpm:9000
     }
+
+    @pdfServerPath {
+        path /puppeteer/generate/pdf
+    }
+
+    handle @pdfServerPath {
+        # puppeteer server
+        reverse_proxy host.docker.internal:3300
+    }
+
+    @pdfPagePath {
+        path /pdfpageview/*
+    }
+
+    handle @pdfPagePath {
+        reverse_proxy host.docker.internal:3000
+    }
+
+    handle {
+        redir https://{host}{uri}
+    }
+}
+
+*.hpwaiver.com {
+	import ./security.conf
+	
+	tls internal
 
     @apiPath {
         path /api/*
@@ -23,21 +55,30 @@ http://*.hyperwaiver.com {
 		php_fastcgi php-fpm:9000
     }
 
-    handle {
-        redir https://{host}{uri} permanent
+    @pdfServerPath {
+        path /puppeteer/generate/pdf
     }
+
+    handle @pdfServerPath {
+        # puppeteer server
+        reverse_proxy host.docker.internal:3300
+    }
+
+	handle {
+		reverse_proxy host.docker.internal:3000
+	}
 }
 
-https://hyperwaiver.com,
-https://*.hyperwaiver.com,
-{
-	import ./security.conf
+
+# landing page
+hyperpwaiver.com {
+    import ./security.conf
 	
 	tls internal
 
 	handle {
-		reverse_proxy webapp:3000 {
-            header_up Host {host}
-        }
+		reverse_proxy host.docker.internal:3100
 	}
 }
+
+
