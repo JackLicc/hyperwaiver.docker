@@ -58,6 +58,8 @@ RUN chown -R www-data:www-data /var/www/hyperwaiver \
 
 USER www-data
 
+RUN composer install --no-dev --optimize-autoloader
+
 EXPOSE 9000
 
 CMD ["php-fpm"]
