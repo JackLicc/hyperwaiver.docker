@@ -36,6 +36,9 @@ services:
       - beanstalkd
     container_name: php-fpm
     tty: true
+    environment:
+      - HOST_UID=${HOST_UID}
+      - HOST_GID=${HOST_GID}
     volumes:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
     ports:

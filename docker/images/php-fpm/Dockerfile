@@ -49,17 +49,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/hyperwaiver
 
-RUN usermod -u 1000 www-data
-RUN groupmod -g 1000 www-data
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-RUN chown -R www-data:www-data /var/www/hyperwaiver \
-    && mkdir -p /var/www/hyperwaiver/storage \
-    && chmod -R 755 /var/www/hyperwaiver/storage
-
-USER www-data
-
-RUN composer install --no-dev --optimize-autoloader
-
-EXPOSE 9000
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["php-fpm"]
