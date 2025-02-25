@@ -89,7 +89,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./mnt/docker-data:/var/lib/mysql
+      - /mnt/docker-data:/var/lib/mysql
       - ./docker/images/mariadb:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
