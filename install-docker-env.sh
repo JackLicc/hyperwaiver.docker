@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source .env
+
 [ ! -d "codebases/hyperwaiver" ] && git clone --branch main git@github.com:JackLicc/hyperwaiver.git codebases/hyperwaiver
 [ ! -d "codebases/hyperwaiver-fe" ] && git clone --branch main git@github.com:JackLicc/hyperwaiver-fe.git codebases/hyperwaiver-fe
 

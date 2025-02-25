@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source .env
 
 if [ "$ENV" = "production" ]; then
     compose_files="-f docker-compose.yaml -f docker-compose.prod.yaml"
