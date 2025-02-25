@@ -1,0 +1,99 @@
+http://central.hpwaiver.com,
+http://tenant1.hpwaiver.com,
+http://tenant2.hpwaiver.com,
+http://tenant3.hpwaiver.com,
+http://tenant4.hpwaiver.com,
+http://tenant5.hpwaiver.com,
+http://tenant6.hpwaiver.com,
+http://tenant7.hpwaiver.com,
+http://tenant8.hpwaiver.com {
+    # make sure all api requests are internal calls
+    @apiPath {
+        path /api/*
+    }
+
+    handle @apiPath {
+		root * /var/www/hyperwaiver/public
+
+		file_server
+
+		rewrite * /index.php?{query}
+
+		php_fastcgi php-fpm:9000
+    }
+
+    @pdfServerPath {
+        path /puppeteer/generate/pdf
+    }
+
+    handle @pdfServerPath {
+        # puppeteer server
+        reverse_proxy host.docker.internal:3300
+    }
+
+    @pdfPagePath {
+	path /app/waiver/pdfview/*
+    }
+
+    handle @pdfPagePath {
+        reverse_proxy host.docker.internal:3000
+    }
+
+    handle {
+        redir https://{host}{uri}
+    }
+}
+
+central.hpwaiver.com,
+tenant1.hpwaiver.com,
+tenant2.hpwaiver.com,
+tenant3.hpwaiver.com,
+tenant4.hpwaiver.com,
+tenant5.hpwaiver.com,
+tenant6.hpwaiver.com,
+tenant7.hpwaiver.com,
+tenant8.hpwaiver.com
+{
+	import ./security.conf
+	
+	tls internal
+
+    @apiPath {
+        path /api/*
+    }
+
+    handle @apiPath {
+		root * /var/www/hyperwaiver/public
+
+		file_server
+
+		rewrite * /index.php?{query}
+
+		php_fastcgi php-fpm:9000
+    }
+
+    @pdfServerPath {
+        path /puppeteer/generate/pdf
+    }
+
+    handle @pdfServerPath {
+        # puppeteer server
+        reverse_proxy host.docker.internal:3300
+    }
+
+	handle {
+		reverse_proxy host.docker.internal:3000
+	}
+}
+
+# landing page
+hpwaiver.com,
+www.hpwaiver.com {
+    import ./security.conf
+	
+	tls internal
+
+	handle {
+		reverse_proxy host.docker.internal:3100
+	}
+}
