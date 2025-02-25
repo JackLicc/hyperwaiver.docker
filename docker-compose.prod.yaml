@@ -1,18 +1,1 @@
 services:
-  webapp:
-    build:
-      context: ./codebases/hyperwaiver-fe
-      dockerfile: ../../docker/images/webapp/production/Dockerfile # relative to the context
-    env_file: "./docker/images/webapp/production/env.production"
-    container_name: webapp
-    environment:
-      - NODE_ENV=production
-    tty: true
-    volumes:
-      - ./codebases:/var/www/
-    ports:
-      - "3000:3000"
-    expose:
-      - "3000"
-    networks:
-      web-network:
