@@ -49,7 +49,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/hyperwaiver
 
+EXPOSE 9000
+
 COPY entrypoint.sh /entrypoint.sh
+
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
