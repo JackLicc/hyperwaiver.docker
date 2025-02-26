@@ -1,12 +1,25 @@
-http://central.hpwaiver.com,
-http://tenant1.hpwaiver.com,
-http://tenant2.hpwaiver.com,
-http://tenant3.hpwaiver.com,
-http://tenant4.hpwaiver.com,
-http://tenant5.hpwaiver.com,
-http://tenant6.hpwaiver.com,
-http://tenant7.hpwaiver.com,
-http://tenant8.hpwaiver.com {
+{
+	acme_dns cloudflare {
+		zone_token {env.CF_ZONE_ID}
+		api_token {env.CF_API_KEY}
+	}
+	resolvers 1.1.1.1
+
+}
+# landing page
+hyperwaiver.com,
+www.hyperwaiver.com {
+    log stdout;
+    log syslog;
+    import ./security.conf
+
+    handle {
+	reverse_proxy host.docker.internal:3100
+    }
+}
+
+
+http://*.hyperwaiver.com {
     # make sure all api requests are internal calls
     @apiPath {
         path /api/*
@@ -44,32 +57,21 @@ http://tenant8.hpwaiver.com {
     }
 }
 
-central.hpwaiver.com,
-tenant1.hpwaiver.com,
-tenant2.hpwaiver.com,
-tenant3.hpwaiver.com,
-tenant4.hpwaiver.com,
-tenant5.hpwaiver.com,
-tenant6.hpwaiver.com,
-tenant7.hpwaiver.com,
-tenant8.hpwaiver.com
-{
-	import ./security.conf
-	
-	tls internal
+https://*.hyperwaiver.com {
+    import ./security.conf
 
     @apiPath {
         path /api/*
     }
 
     handle @apiPath {
-		root * /var/www/hyperwaiver/public
+        root * /var/www/hyperwaiver/public
 
-		file_server
+        file_server
 
-		rewrite * /index.php?{query}
+        rewrite * /index.php?{query}
 
-		php_fastcgi php-fpm:9000
+        php_fastcgi php-fpm:9000
     }
 
     @pdfServerPath {
@@ -81,19 +83,7 @@ tenant8.hpwaiver.com
         reverse_proxy host.docker.internal:3300
     }
 
-	handle {
-		reverse_proxy host.docker.internal:3000
-	}
-}
-
-# landing page
-hpwaiver.com,
-www.hpwaiver.com {
-    import ./security.conf
-	
-	tls internal
-
-	handle {
-		reverse_proxy host.docker.internal:3100
-	}
+    handle {
+        reverse_proxy host.docker.internal:3000
+    }
 }
