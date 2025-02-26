@@ -1,4 +1,26 @@
 services:
+  caddy:
+    image: caddy:2.9.1-alpine
+    container_name: caddy
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./docker/images/caddy/conf.d:/etc/caddy
+      - ./codebases:/var/www
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    networks:
+      web-network:
+      
   mailpit:
     image: axllent/mailpit:latest
     container_name: mailpit
