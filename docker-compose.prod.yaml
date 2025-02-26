@@ -19,7 +19,8 @@ services:
       - ./docker/images/caddy/conf.d:/etc/caddy
       - ./codebases:/var/www
     environment:
-      - CADDY_INGRESS_NETWORKS=web-network
+      - CF_ZONE_ID: ${CF_ZONE_ID}
+      - CF_API_KEY: ${CF_API_KEY}
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
     networks:
       web-network:
