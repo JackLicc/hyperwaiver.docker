@@ -5,6 +5,11 @@ hyperwaiver.com {
 www.hyperwaiver.com {
     import ./security.conf
     
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+        resolvers 1.1.1.1
+    }
+
     handle {
         reverse_proxy host.docker.internal:3100
     }
