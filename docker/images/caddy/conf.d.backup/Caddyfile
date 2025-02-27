@@ -2,16 +2,17 @@ hyperwaiver.com {
     redir https://www.{host}{uri}
 }
 
+www.hyperwaiver.com {
+    import ./security.conf
+    
+    handle {
+        reverse_proxy host.docker.internal:3100
+    }
+}
+
 http://*.hyperwaiver.com {
-    @wwwHost {
-        host www.hyperwaiver.com
-    }
+    import ./security.conf
 
-    handle @wwwHost {
-        redir https://www.{host}{uri}
-    }
-
-    # make sure all api requests are internal calls
     @apiPath {
         path /api/*
     }
@@ -54,14 +55,6 @@ https://*.hyperwaiver.com {
     tls {
         dns cloudflare {env.CF_API_TOKEN}
         resolvers 1.1.1.1
-    }
-
-    @wwwHost {
-        host www.hyperwaiver.com
-    }
-
-    handle @wwwHost {
-        reverse_proxy host.docker.internal:3100
     }
 
     @apiPath {
