@@ -1,9 +1,4 @@
 hyperwaiver.com {
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
-    header_up X-Forwarded-Host {host}
-    header_up X-Real-IP {remote_host}
-
     tls {
         dns cloudflare {env.CF_API_TOKEN}
         resolvers 1.1.1.1
@@ -13,10 +8,6 @@ hyperwaiver.com {
 }
 
 www.hyperwaiver.com {
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
-    header_up X-Forwarded-Host {host}
-    header_up X-Real-IP {remote_host}
 
     import ./security.conf
     
@@ -26,15 +17,16 @@ www.hyperwaiver.com {
     }
 
     handle {
-        reverse_proxy host.docker.internal:3100
+        reverse_proxy http://127.0.0.1:3100 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Real-IP {remote_host}
+        }
     }
 }
 
 http://*.hyperwaiver.com {
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
-    header_up X-Forwarded-Host {host}
-    header_up X-Real-IP {remote_host}
 
     import ./security.conf
 
@@ -49,7 +41,7 @@ http://*.hyperwaiver.com {
 
 	rewrite * /index.php?{query}
 
-	php_fastcgi php-fpm:9000
+	php_fastcgi http://127.0.0.1:9000
     }
 
     @pdfServerPath {
@@ -58,15 +50,20 @@ http://*.hyperwaiver.com {
 
     handle @pdfServerPath {
         # puppeteer server
-        reverse_proxy host.docker.internal:3300
+        reverse_proxy http://127.0.0.1:3300
     }
 
     @pdfPagePath {
-	path /app/waiver/pdfview/*
+	    path /app/waiver/pdfview/*
     }
 
     handle @pdfPagePath {
-        reverse_proxy host.docker.internal:3000
+        reverse_proxy http://127.0.0.1:3000 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Real-IP {remote_host}
+        }
     }
 
     handle {
@@ -75,11 +72,7 @@ http://*.hyperwaiver.com {
 }
 
 https://*.hyperwaiver.com {
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
-    header_up X-Forwarded-Host {host}
-    header_up X-Real-IP {remote_host}
-    
+
     import ./security.conf
 
     tls {
@@ -98,7 +91,12 @@ https://*.hyperwaiver.com {
 
         rewrite * /index.php?{query}
 
-        php_fastcgi php-fpm:9000
+        php_fastcgi http://127.0.0.1:9000 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Real-IP {remote_host}
+        }
     }
 
     @pdfServerPath {
@@ -107,10 +105,10 @@ https://*.hyperwaiver.com {
 
     handle @pdfServerPath {
         # puppeteer server
-        reverse_proxy host.docker.internal:3300
+        reverse_proxy http://127.0.0.1:3300
     }
 
     handle {
-        reverse_proxy host.docker.internal:3000
+        reverse_proxy http://127.0.0.1:3000
     }
 }

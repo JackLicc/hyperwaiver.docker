@@ -5,12 +5,6 @@ services:
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy_data:/data
@@ -18,8 +12,7 @@ services:
       - ./docker/images/caddy/conf.d:/etc/caddy
       - ./codebases:/var/www
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
-    networks:
-      web-network:
+    network_mode: "host" 
       
   mailpit:
     image: axllent/mailpit:latest
@@ -27,16 +20,12 @@ services:
     restart: unless-stopped
     volumes:
       - mailpit_data:/data
-    ports:
-      - 8025:8025
-      - 1025:1025
     environment:
       MP_MAX_MESSAGES: 5000
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-    networks:
-      web-network:
+    network_mode: "host" 
 
 volumes:
   mailpit_data:

@@ -1,6 +1,3 @@
-networks:
-  web-network:
-
 services:
   php-fpm:
     build:
@@ -14,12 +11,7 @@ services:
     tty: true
     volumes:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
-    ports:
-      - "9000:9000"
-    expose:
-      - "9000"
-    networks:
-      web-network:
+    network_mode: "host" 
 
   queue-worker:
     image: php-fpm
@@ -34,9 +26,8 @@ services:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
     command: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600
     restart: always 
-    networks:
-      web-network:
-
+    network_mode: "host" 
+    
   scheduler-worker:
     image: php-fpm
     container_name: scheduler-worker
@@ -50,8 +41,7 @@ services:
       - ./codebases/hyperwaiver:/var/www/hyperwaiver
     command: php artisan schedule:work
     restart: always 
-    networks:
-      web-network:
+    network_mode: "host" 
 
   mariadb:
     build:
@@ -59,15 +49,12 @@ services:
     image: mariadb
     container_name: mariadb
     tty: true
-    ports:
-      - "3306:3306"
     volumes:
       - /mnt/docker-data:/var/lib/mysql
       - ./docker/images/mariadb:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    networks:
-      web-network:
+    network_mode: "host" 
 
   redis:
     build:
@@ -75,18 +62,12 @@ services:
     image: redis
     container_name: redis
     tty: true
-    ports:
-      - "6379:6379"
-    networks:
-      web-network:
+    network_mode: "host" 
 
   beanstalkd:
     image: schickling/beanstalkd
     container_name: beanstalkd
-    ports:
-      - "11300:11300"
-    networks:
-      web-network:
+    network_mode: "host" 
 
 volumes:
   caddy_data:
