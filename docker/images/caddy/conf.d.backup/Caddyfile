@@ -1,4 +1,9 @@
 hyperwaiver.com {
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Host {host}
+    header_up X-Real-IP {remote_host}
+
     tls {
         dns cloudflare {env.CF_API_TOKEN}
         resolvers 1.1.1.1
@@ -8,6 +13,11 @@ hyperwaiver.com {
 }
 
 www.hyperwaiver.com {
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Host {host}
+    header_up X-Real-IP {remote_host}
+
     import ./security.conf
     
     tls {
@@ -21,6 +31,11 @@ www.hyperwaiver.com {
 }
 
 http://*.hyperwaiver.com {
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Host {host}
+    header_up X-Real-IP {remote_host}
+
     import ./security.conf
 
     @apiPath {
@@ -60,6 +75,11 @@ http://*.hyperwaiver.com {
 }
 
 https://*.hyperwaiver.com {
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-Host {host}
+    header_up X-Real-IP {remote_host}
+    
     import ./security.conf
 
     tls {
