@@ -8,6 +8,7 @@ hyperwaiver.com {
 }
 
 www.hyperwaiver.com {
+    encode zstd gzip
 
     import ./security.conf
     
@@ -27,6 +28,7 @@ www.hyperwaiver.com {
 }
 
 http://*.hyperwaiver.com {
+    encode zstd gzip
 
     import ./security.conf
 
@@ -72,6 +74,7 @@ http://*.hyperwaiver.com {
 }
 
 https://*.hyperwaiver.com {
+    encode zstd gzip
 
     import ./security.conf
 
